@@ -6,6 +6,8 @@ from xml.dom import minidom
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+import numpy as np
+from sklearn.feature_extraction import DictVectorizer
 
 
 """
@@ -26,7 +28,10 @@ The featureset is defined as a dictionary mapping string to boolean:
 """
 
 class FeatureExtractor:
-    
+
+    def __init__(self):
+        self.vec = DictVectorizer()
+
     """
     Bag of Words are the surrounding words features, and include all
     the individual words in the surrounding context of an ambiguous
@@ -144,3 +149,20 @@ class FeatureExtractor:
                 colFeatures[fname] = True
                 
         return colFeatures
+
+
+    def convert2sklearn(self, features, train=True):
+        X = list()
+        y = list()
+
+        for i in range(0,len(features)):
+            X.append(features[i][0])
+            y.append(features[i][1])
+
+        if train:
+            X = self.vec.fit_transform(X).toarray()
+        else:
+            X = self.vec.transform(X).toarray()
+        y = np.array(y)
+        return (X, y)
+    
