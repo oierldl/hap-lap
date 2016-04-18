@@ -13,7 +13,8 @@ from Baseline import Baseline
 
 
 cl_type = {"WNFIRST": "baseline", "MFS": "baseline", "RND": "baseline", 
-           "MaxEnt" : "classifier", "NB": "classifier", "DT": "classifier" }
+           "MaxEnt" : "classifier", "NB": "classifier", "DT": "classifier",
+           "LR_sklearn" : "classifier", "SVM_sklearn" : "classifier"}
 
 
 def usage():
