@@ -14,17 +14,18 @@ from Baseline import Baseline
 
 cl_type = {"WNFIRST": "baseline", "MFS": "baseline", "RND": "baseline", 
            "MaxEnt" : "classifier", "NB": "classifier", "DT": "classifier",
-           "LR_sklearn" : "classifier", "SVM_sklearn" : "classifier"}
+           "MaxEnt_sklearn" : "classifier", "SVM_sklearn" : "classifier", "NB_sklearn": "classifier",
+           "DT_sklearn" : "classifier"}
 
 
 def usage():
-    sys.stderr.write("USAGE: experimenter.py -c configure.file")
+    sys.stderr.write("USAGE: experimenter.py [-l] -c configure.file")
 
 
 if __name__ == '__main__':
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "c:")
-    
+        opts, args = getopt.getopt(sys.argv[1:], "lc:")
+
     except getopt.GetoptError as err :
         usage()
         sys.exit(2)
@@ -33,15 +34,25 @@ if __name__ == '__main__':
         usage()
         sys.exit(2)
 
+    print_cl_type = False
     conf_file = ""
     for o, a in opts:
+        if o == "-l":
+            print_cl_type = True
         if o == "-c":
             conf_file = a
+
+    if print_cl_type:
+        for cl in sorted(cl_type.keys()):
+            print (" " + cl + ": " + cl_type[cl])
+        sys.stderr.write("\n [USAGE] Run experiments with -c options:\n\t$> experimenter.py -c configure.file\n\n")
+        sys.exit(2)
+
     if conf_file == "":
         usage()
         sys.exit(2)
     props = utils.read_properties(conf_file)
-    
+
     ##
     ## INITIALIZE MOST OF THE STUFF
     ##

@@ -2,16 +2,18 @@ __author__ = 'Oier Lopez de Lacalle'
 
 import sys
 import os
-import re
 import getopt
 import utils
+import numpy as np
+import scipy.stats as st
 from nltk.metrics import ConfusionMatrix
 from LexSampReader import LexSampReader
 
 
-cl_type = {"WNFIRST": "baseline", "MFS": "baseline", "RND": "baseline", 
-           "MaxEnt" : "classifier", "NB": "classifier", "DT": "classifier",
-           "LR_sklearn" : "classifier", "SVM_sklearn" : "classifier"}
+cl_type = {"WNFIRST": "baseline", "MFS": "baseline", "RND": "baseline",
+           "MaxEnt": "classifier", "NB": "classifier", "DT": "classifier",
+           "MaxEnt_sklearn": "classifier", "SVM_sklearn": "classifier", "NB_sklearn": "classifier",
+           "DT_sklearn": "classifier"}
 
 
 def usage():
@@ -72,6 +74,17 @@ if __name__ == '__main__':
         sys.stderr.write("[ERROR] XVAL number of folds not defined\n")
     K = int(props["XVAL"])
 
+    filename = word + "." + class_name + "." + fs + ".acc"
+    f = open(results_dir + "/" + word + "/" + filename, "r")
+    res = [float(i) for i in f]
+    f.close()
+
+    w_avg = np.mean(res)
+    w_std = np.std(res)
+    w_ci = st.t.interval(0.95, len(res) - 1, loc=np.mean(res), scale=st.sem(res))
+    print ""
+    print("  OVERALL: %s\t%6.2f (fscore)\t%6.2f (lwr95)\t%6.2f (upr95)" % (word, w_avg *100, w_ci[0]*100, w_ci[1]*100))
+
     gold = dict()
     preds = dict()
     for fold in range(1, K+1):
@@ -96,7 +109,8 @@ if __name__ == '__main__':
     g_senses = [gold[insId] for insId in sorted(gold.keys())]
     cm = ConfusionMatrix(g_senses, p_senses)
     print("")
-    print(cm.pp(sort_by_count=True, show_percents=True, truncate=9))
+    #print(cm.pp(sort_by_count=True, show_percents=True, truncate=9))
+    print(cm.pretty_format(sort_by_count=True, show_percents=True, truncate=9))
 
     defs = utils.read_definitions(defpath)
     for sense in sorted(defs[word].keys()):

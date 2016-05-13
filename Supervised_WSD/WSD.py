@@ -2,15 +2,14 @@ __author__ = 'Oier Lopez de Lacalle'
 
 import sys
 import os
-import re 
 import time
 import nltk
 import cPickle as pickle
 from FeatureExtractor import FeatureExtractor
-from nltk.classify import maxent
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
-
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.tree import DecisionTreeClassifier
 
 class WSD:
 
@@ -66,14 +65,28 @@ class WSD:
             sys.stderr.write("[Time] %s : Learning a Decission Tree classifier\n" % time.asctime())
             self.classifier = nltk.classify.DecisionTreeClassifier.train(self.trainFeatures, entropy_cutoff=0, support_cutoff=0)
 
-        if self.className == "LR_sklearn":
+        if self.className == "NB_sklearn":
+            sys.stderr.write(
+                "[Time] %s : Learning a Multinomial Naive Bayes (scikit-learn) classifier\n" % time.asctime())
+            X, y = self.featExtractor.convert2sklearn(self.trainFeatures)
+            self.classifier = MultinomialNB()
+            self.classifier.fit(X, y)
+
+        if self.className == "DT_sklearn":
+            sys.stderr.write(
+                "[Time] %s : Learning a Decision Tree (scikit-learn) classifier\n" % time.asctime())
+            X, y = self.featExtractor.convert2sklearn(self.trainFeatures)
+            self.classifier =  DecisionTreeClassifier(random_state=0)
+            self.classifier.fit(X, y)
+
+        if self.className == "MaxEnt_sklearn":
             sys.stderr.write("[Time] %s : Learning a Logistic Regression (scikit-learn) classifier\n" % time.asctime())
             X, y = self.featExtractor.convert2sklearn(self.trainFeatures)
             self.classifier = LogisticRegression()
             self.classifier.fit(X, y)
 
         if self.className == "SVM_sklearn":
-            sys.stderr.write("[Time] %s : Learning a Linear Support Vector Machine(scikit-learn) classifier\n" % time.asctime())
+            sys.stderr.write("[Time] %s : Learning a Linear Support Vector Machine (scikit-learn) classifier\n" % time.asctime())
             X, y = self.featExtractor.convert2sklearn(self.trainFeatures)
             self.classifier = LinearSVC(C=1.0)
             self.classifier.fit(X, y)
