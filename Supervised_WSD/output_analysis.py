@@ -8,8 +8,10 @@ import utils
 from nltk.metrics import ConfusionMatrix
 from LexSampReader import LexSampReader
 
+
 cl_type = {"WNFIRST": "baseline", "MFS": "baseline", "RND": "baseline", 
-           "MaxEnt" : "classifier", "NB": "classifier", "DT": "classifier" }
+           "MaxEnt" : "classifier", "NB": "classifier", "DT": "classifier",
+           "LR_sklearn" : "classifier", "SVM_sklearn" : "classifier"}
 
 
 def usage():
