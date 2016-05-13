@@ -110,7 +110,7 @@ class WSD:
             sys.stderr.write("[Time] %s : Test features aldready extracted\n" % time.asctime())
 
         sys.stderr.write("[Time] %s : Predictions on test\n" % time.asctime())
-        if self.className == "LR_sklearn" or self.className == "SVM_sklearn":
+        if self.className == "MaxEnt_sklearn" or self.className == "SVM_sklearn" or self.className == "DT_sklearn" or self.className == "NB_sklearn":
             X, y = self.featExtractor.convert2sklearn(self.testFeatures, train=False)
             predictions = self.classifier.predict(X)
         else:
@@ -128,7 +128,7 @@ class WSD:
                     sys.stderr.write("[Time] %s : Extracting test features\n" % time.asctime())
                 self.testFeatures = self.getFeatures(self.test)
 
-            if self.className == "LR_sklearn" or self.className == "SVM_sklearn":
+            if self.className == "MaxEnt_sklearn" or self.className == "SVM_sklearn" or self.className == "DT_sklearn" or self.className == "NB_sklearn":
                 X_test, y_test = self.featExtractor.convert2sklearn(self.testFeatures, train=False)
                 acc = self.classifier.score(X_test, y_test)
             else:
