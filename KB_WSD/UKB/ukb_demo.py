@@ -3,6 +3,7 @@ __author__ = "Oier Lopez de Lacalle <oier.lopezdelacalle@gmail.com>"
 import sys
 import os
 import re
+import getopt
 import tempfile
 import nltk
 from nltk.stem import WordNetLemmatizer
@@ -14,6 +15,7 @@ ukbprogram = home + "/ukb/bin/ukb_wsd "
 dictionary = home + "/lkb_sources/30/wnet30_dict.txt"
 graph = home + "/lkb_sources/30/wn30+gloss.bin"
 ukbargs = "--ppr --dict_weight -D %s -K %s " % (dictionary, graph)
+ukbargs_static = "--ppr --static --dict_weight -D %s -K %s " % (dictionary, graph)
 
 wn_dict = home + "/wn_dict"
 lemmatizer = WordNetLemmatizer()
@@ -33,6 +35,15 @@ def read_definitions(wn_dir):
 
 
 if __name__ == '__main__':
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "s")
+    except getopt.GetoptError as err:
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-s":
+            ukbargs = ukbargs_static
+
     c = 0
     while (1):
         print("Enter a sentence (type \"q\" to quit):")
@@ -71,7 +82,7 @@ if __name__ == '__main__':
         f.close()
 
         of = tempfile.NamedTemporaryFile(delete=False)
-
+        
         run_call = ukbprogram + ukbargs + f.name + ">" + of.name
         os.system(run_call)
         of.close()
