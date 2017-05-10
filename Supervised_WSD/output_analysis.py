@@ -17,12 +17,15 @@ cl_type = {"WNFIRST": "baseline", "MFS": "baseline", "RND": "baseline",
 
 
 def usage():
-    sys.stderr.write("output_analysis.py -w {word} -c exp.conf\n")
+    sys.stderr.write("output_analysis.py -w {word} -c exp.conf [-r]\n")
+    sys.stderr.write("\t -w: Target word to be analyzed\n")
+    sys.stderr.write("\t -c: Experimentation configure file\n")
+    sys.stderr.write("\t -r: Activate raw counts\n")
 
 
 if __name__ == '__main__':
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:c:")
+        opts, args = getopt.getopt(sys.argv[1:], "w:c:r")
     
     except getopt.GetoptError as err :
         usage()
@@ -31,11 +34,14 @@ if __name__ == '__main__':
     defpath = "./data/amt-sense-mt-2013/senses.tsv"
     conf_file = ""
     word = ""
+    percents = True
     for o, a in opts:
         if o == "-c":
             conf_file = a
         elif o == "-w":
             word = a
+        elif o == "-r":  # raw counts
+            percents = False
 
     if conf_file == "" or word == "":
         usage()
@@ -98,7 +104,7 @@ if __name__ == '__main__':
         
         # READ PREDICTIONS
         filename = word + ".f"+str(fold)+"."+class_name+"."+fs+".out"
-        f = open(results_dir + "/" + word +"/"+filename,"r")
+        f = open(results_dir + "/" + word + "/" + filename, "r")
         for ins in f:
             ins = ins.rstrip()
             (insId, sense) = ins.split("\t")
@@ -109,8 +115,10 @@ if __name__ == '__main__':
     g_senses = [gold[insId] for insId in sorted(gold.keys())]
     cm = ConfusionMatrix(g_senses, p_senses)
     print("")
-    #print(cm.pp(sort_by_count=True, show_percents=True, truncate=9))
-    print(cm.pretty_format(sort_by_count=True, show_percents=True, truncate=9))
+    try:
+        print(cm.pp(sort_by_count=True, show_percents=percents, truncate=9))
+    except:
+        print(cm.pretty_format(sort_by_count=True, show_percents=percents, truncate=9))
 
     defs = utils.read_definitions(defpath)
     for sense in sorted(defs[word].keys()):
