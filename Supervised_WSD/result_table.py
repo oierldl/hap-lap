@@ -74,7 +74,7 @@ if __name__ == '__main__':
         w_avg = np.mean(res)
         w_std = np.std(res)
         w_ci = st.t.interval(0.95, len(res)-1, loc=np.mean(res), scale=st.sem(res))
-        if w_ci[0] < 0: w_ci = (0, w_ci[1])
+        if w_ci[0] < 0: w_ci = (0, ci[1])
         if w_ci[1] > 1: ci = (w_ci[0], 1)
         sys.stdout.write("%s\t%6.4f\t%6.4f\t%6.4f\t%6.4f\n" % (word, w_avg, w_std, w_ci[0], w_ci[1]))
         avg.append(w_avg)
