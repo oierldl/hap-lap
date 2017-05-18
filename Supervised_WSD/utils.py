@@ -52,3 +52,23 @@ def read_definitions(filename):
         words[w][w +"_"+s] = d
     f.close()
     return words
+
+def read_key(filename):
+    instances = []
+    f = open(filename, "r")
+    for line in f:
+        w, iid, s = line.rstrip().split(" ")
+        instances.append((w, iid, s))
+    f.close()
+    return instances
+
+def read_key_by_lexelt(filename):
+    instances = {}
+    f = open(filename, "r")
+    for line in f:
+        w, iid, s = line.rstrip().split(" ")[0:3] # take first sense
+        if w not in instances:
+            instances[w] = {}
+        instances[w][iid] = ((w, iid, s))
+    f.close()
+    return instances

@@ -140,8 +140,8 @@ class FeatureExtractor:
         offset = instance[2]
         tokens = instance[3]
         for ci in range(0, len(begins)):
-            begin = offset - begins[ci]
-            end = offset - ends[ci]
+            begin = offset + begins[ci]
+            end = offset + ends[ci]
             
             if (begin >= 0) or (end <= len(tokens)):
                 iname = str(begins[ci]) + "," + str(ends[ci])

@@ -39,8 +39,50 @@ class LexSampReader:
         self.instances = []
         self.lexSampFile = None
 
+    def getInstancesByLexelt(self,lexFile):
+        try:
+            self.xmlDoc = minidom.parse(lexFile)
+        except Exception:
+            sys.stderr.write("Cannot parse "+ lexFile)
+
+        lex2instances = {}
+        lexs = self.xmlDoc.getElementsByTagName("lexelt")
+        for lex in lexs:
+            instances = []
+            target = lex.getAttribute("item")
+            inss = lex.getElementsByTagName("instance")
+            for ins in inss:
+                insId = ins.getAttribute("id")
+                if len(ins.getElementsByTagName("answer")) == 0:
+                    insLab = None
+                else:
+                    insLab = ins.getElementsByTagName("answer")[0].getAttribute("senseid")
+                #match = re.search("([0-9]+)", insLab)
+                #if match:
+                #    insLab = match.group(1)
+
+                context = ins.getElementsByTagName("context")[0]
+                cStr = self.getContext(context)
+                #print(cStr)
+
+                tokens = nltk.word_tokenize(cStr)
+                offset = self.getTargetOffset(tokens)
+                tokens = self.removeHead(tokens)
+                #print(tokens)
+                
+                instance = (insId, insLab, offset, tokens)
+                instances.append(instance)
+            lex2instances[target] = instances
+        return lex2instances
+    
         
     def getInstances(self,lexFile):
+        '''This method is useful when training/test is separated by target
+        words, since all the instances are append in a list. Target-word is not stored.
+
+        For example, this is useful for MASC dataset.
+
+        '''
         try:
             self.xmlDoc = minidom.parse(lexFile)
         except Exception:
@@ -68,8 +110,7 @@ class LexSampReader:
                 #print(tokens)
                 
                 instance = (insId, insLab, offset, tokens)
-                instances.append(instance)
-                
+                instances.append(instance)                
         return instances
     
 
